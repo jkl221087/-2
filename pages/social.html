@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="socialTitle">夜市動態分享社群</title>
+    <link rel="stylesheet" href="../css/social.css">
+    <script src="../javascript/i18n.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="nav-container">
+            <nav class="nav-links">
+                <a href="../pages/home.html" data-i18n="home">首頁</a>
+                <button id="themeToggle" class="theme-toggle">
+                    <svg class="sun-icon" viewBox="0 0 24 24">
+                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24">
+                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="social-container">
+        <!-- 發布貼文區域 -->
+        <div class="post-creation">
+            <div class="post-form">
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/50" alt="" data-i18n-alt="anonymousAvatar" class="avatar">
+                    <div class="file-upload-wrapper">
+                        <label for="avatar-upload" class="custom-file-upload" data-i18n="chooseFile">選擇檔案</label>
+                        <input type="file" id="avatar-upload" accept="image/*">
+                    </div>
+                    <input type="text" data-i18n-placeholder="anonymousNickname" placeholder="您的匿名暱稱" maxlength="20">
+                </div>
+                <div class="textarea-container">
+                    <textarea 
+                        id="post-content"
+                        data-i18n-placeholder="shareExperience" 
+                        placeholder="分享您的夜市美食體驗..." 
+                        maxlength="500"
+                    ></textarea>
+                    <div class="character-count">
+                        <span id="current-count">0</span>
+                        <span>/</span>
+                        <span>500</span>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="upload-photo">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span data-i18n="uploadPhoto">上傳照片</span>
+                    </button>
+                    <div class="image-preview" style="display: none;">
+                        <img id="preview-image" src="" alt="" data-i18n-alt="previewImage">
+                        <button class="remove-image" aria-label="" data-i18n="removeImage">×</button>
+                    </div>
+                    <button class="location-tag">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        <span data-i18n="markLocation">標記夜市</span>
+                    </button>
+                    <button class="post-submit" data-i18n="publish">發布</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- After the post-creation div and before posts-feed div -->
+        <div class="loading-state" style="display: none;">
+            <div class="spinner"></div>
+            <p data-i18n="loadingPosts">載入貼文中...</p>
+        </div>
+
+        <div class="error-state" style="display: none;">
+            <p data-i18n="loadError">載入失敗，請稍後再試</p>
+            <button class="retry-btn" data-i18n="retry">重試</button>
+        </div>
+
+        <!-- 貼文列表 -->
+        <div class="posts-feed">
+            <!-- 示例貼文 -->
+            <article class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/50" alt="" data-i18n-alt="userAvatar" class="avatar">
+                    <div class="post-info">
+                        <h3 class="username" data-i18n="foodExpert">美食達人</h3>
+                        <span class="location">📍 <span data-i18n="nightMarketLocation">饒河街夜市</span></span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p data-i18n="foodDescription">今天在饒河街發現超讚的蚵仔煎！老闆的醬料配方特別，完全不一樣的美味～推薦大家來試試！</p>
+                    <img src="https://via.placeholder.com/800x400" alt="" data-i18n-alt="foodPhoto" class="post-image">
+                </div>
+                <div class="post-actions">
+                    <button class="like-btn" data-liked="false" data-i18n="likeAction" aria-label="">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span data-i18n="likeAction">讚</span>
+                        <span class="like-count" data-i18n="likeCount">0</span>
+                    </button>
+                    <button class="comment-btn" data-i18n="commentAction" aria-label="">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span data-i18n="commentAction">留言</span>
+                        <span class="comment-count" data-i18n="commentCount">0</span>
+                    </button>
+                    <button class="share-btn" data-i18n="shareAction" aria-label="">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span data-i18n="shareAction">分享</span>
+                    </button>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <script src="../javascript/data.js"></script>
+    <script src="../javascript/social.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化 i18n
+            window.i18n.initI18n();
+            window.i18n.updateContent();
+
+            // 添加測試代碼，在控制台輸出當前語言
+            console.log('Current language:', window.i18n.currentLang);
+            console.log('Translations:', window.i18n.translations);
+
+            // 測試語言切換按鈕是否正確綁定事件
+            const languageToggle = document.getElementById('languageToggle');
+            if (languageToggle) {
+                console.log('Language toggle button found');
+                languageToggle.addEventListener('click', () => {
+                    console.log('Language toggle clicked');
+                    window.i18n.toggleLanguage();
+                });
+            } else {
+                console.error('Language toggle button not found');
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
+location
