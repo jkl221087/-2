@@ -1,5 +1,4 @@
-// 翻譯對象
-const translations = {
+window.translations = {
     zh: {
         currentLanguage: "中文",
         pageTitle: '台灣夜市搜尋地圖',
@@ -38,7 +37,7 @@ const translations = {
         comment: "留言",
         share: "分享",
         delete: "刪除",
-        writeComment: "寫下您的留言...",
+        writeComment: "寫下您的留...",
         send: "發送",
         confirmDelete: "確定要刪除這則貼文嗎？",
         pleaseEnterNickname: "請輸入暱稱！",
@@ -70,7 +69,19 @@ const translations = {
         commentCount: '0',
         shareCount: '分享',
         languageDisplay: '中文',
-        languageToggleLabel: '切換語言'
+        languageToggleLabel: '切換語言',
+        mapTitle: '台灣夜市互動地圖',
+        searchPlaceholder: '搜尋夜市...',
+        filters: '篩選條件',
+        openNow: '營業中',
+        food: '小吃',
+        accessories: '飾品',
+        myLocation: '我的位置',
+        searching: '搜尋中...',
+        findNearbyMarkets: '尋找附近夜市',
+        nearbyMarkets: '附近的夜市：',
+        viewOnMap: '在地圖中查看',
+        locationError: '您的瀏覽器不支持地理定位功能'
     },
     en: {
         currentLanguage: "English",
@@ -142,11 +153,22 @@ const translations = {
         commentCount: '0',
         shareCount: 'Share',
         languageDisplay: 'English',
-        languageToggleLabel: 'Switch Language'
+        languageToggleLabel: 'Switch Language',
+        mapTitle: 'Taiwan Night Markets Map',
+        searchPlaceholder: 'Search night markets...',
+        filters: 'Filters',
+        openNow: 'Open Now',
+        food: 'Food',
+        accessories: 'Accessories',
+        myLocation: 'My Location',
+        searching: 'Searching...',
+        findNearbyMarkets: 'Find Nearby Markets',
+        nearbyMarkets: 'Nearby Markets:',
+        viewOnMap: 'View on Map',
+        locationError: 'Your browser does not support geolocation'
     }
 };
 
-// 從 localStorage 獲取當前語言，如果沒有則默認為中文
 let currentLang = localStorage.getItem('language') || 'zh';
 
 // 確保初始語言是中文
@@ -154,7 +176,6 @@ if (!localStorage.getItem('language')) {
     localStorage.setItem('language', 'zh');
 }
 
-// 切換語言函數
 function toggleLanguage() {
     console.log('Toggling language from:', currentLang);
     currentLang = currentLang === 'zh' ? 'en' : 'zh';
@@ -162,6 +183,9 @@ function toggleLanguage() {
     
     // 保存語言設置到 localStorage
     localStorage.setItem('language', currentLang);
+    
+    // 更新 window.i18n.currentLang
+    window.i18n.currentLang = currentLang;
     
     // 更新當前語言顯示和語言切換按鈕的顯示文字
     const currentLanguageSpan = document.getElementById('currentLanguage');
@@ -172,81 +196,39 @@ function toggleLanguage() {
     // 更新頁面內容
     updateContent();
     
-    // 更新按鈕的 aria-label
-    const languageToggle = document.getElementById('languageToggle');
-    if (languageToggle) {
-        languageToggle.setAttribute('aria-label', translations[currentLang].languageToggleLabel);
-    }
+    // 發送語言變更事件
+    window.dispatchEvent(new Event('languageChanged'));
 }
 
 // 更新頁面內容
 function updateContent() {
     console.log('Updating content with language:', currentLang);
     
-    // 更新語言按鈕文本
-    const langButton = document.getElementById('currentLanguage');
-    if (langButton) {
-        langButton.textContent = translations[currentLang].currentLanguage;
-    }
-    
-    // 更新所有帶有 data-i18n 屬性的元素
+    // 更新一般文字內容
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        console.log('Updating element:', element, 'with key:', key);
-        
         if (translations[currentLang][key]) {
-            // 更新文本內容
             element.textContent = translations[currentLang][key];
-            
-            // 如果是按鈕且有 aria-label，同時更新 aria-label
-            if (element.tagName.toLowerCase() === 'button') {
-                element.setAttribute('aria-label', translations[currentLang][key]);
-            }
-        } else {
-            console.warn('Missing translation for key:', key, 'in language:', currentLang);
         }
     });
-
-    // 更新所有帶有 data-i18n-placeholder 屬性的元素
+    
+    // 更新 placeholder 文字
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
         const key = element.getAttribute('data-i18n-placeholder');
         if (translations[currentLang][key]) {
             element.placeholder = translations[currentLang][key];
         }
     });
-
-    // 更新所有帶有 data-i18n-alt 屬性的元素
-    document.querySelectorAll('[data-i18n-alt]').forEach(element => {
-        const key = element.getAttribute('data-i18n-alt');
-        if (translations[currentLang][key]) {
-            element.alt = translations[currentLang][key];
-        }
-    });
 }
 
 // 初始化函數
 function initI18n() {
-    // 移除舊的事件監聽器
-    const languageToggle = document.getElementById('languageToggle');
-    if (languageToggle) {
-        // 移除所有現有的事件監聽器
-        languageToggle.replaceWith(languageToggle.cloneNode(true));
-        
-        // 重新獲取元素並添加事件監聽器
-        const newLanguageToggle = document.getElementById('languageToggle');
-        newLanguageToggle.addEventListener('click', () => {
-            console.log('Language toggle clicked, current:', currentLang);
-            toggleLanguage();
-            console.log('Language switched to:', currentLang);
-        });
-    }
-
     // 更新當前語言顯示
     const currentLanguageSpan = document.getElementById('currentLanguage');
     if (currentLanguageSpan) {
-        currentLanguageSpan.textContent = translations[currentLang].currentLanguage;
+        currentLanguageSpan.textContent = translations[currentLang].languageDisplay;
     }
-
+    
     // 更新頁面內容
     updateContent();
 }
@@ -256,12 +238,15 @@ window.i18n = {
     toggleLanguage,
     updateContent,
     initI18n,
-    currentLang,  // 也導出當前語言
-    translations  // 導出翻譯對象
+    currentLang,
+    translations: window.translations
 };
 
 // 初始化時立即更新內容
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded, initializing i18n...');
+    window.i18n.currentLang = currentLang;
     window.i18n.initI18n();
 });
+
+translations

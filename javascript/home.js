@@ -5,6 +5,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTopButton = document.getElementById('backToTop');
     const features = document.querySelectorAll('.feature');
 
+    // 添加語言切換按鈕事件監聽器
+    const languageToggle = document.getElementById('languageToggle');
+    if (languageToggle) {
+        languageToggle.addEventListener('click', () => {
+            window.i18n.toggleLanguage();
+        });
+    }
+
+    // 初始化 i18n
+    if (window.i18n) {
+        window.i18n.initI18n();
+    }
+
     // Hero 區域動畫（僅在 home.html 中執行）
     if (heroContent) {
         heroContent.classList.add('fade-in');

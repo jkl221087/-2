@@ -17,14 +17,20 @@
   <!-- Header -->
   <header class="bg-gray-800 p-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <h1 class="text-2xl font-bold">台灣夜市互動地圖</h1>
-      <div class="search-container">
-        <input type="text" placeholder="搜尋夜市..."
-          class="bg-gray-700 px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+      <h1 class="text-2xl font-bold" data-i18n="pageTitle">台灣夜市互動地圖</h1>
+      <div class="flex items-center gap-4">
+        <div class="search-container">
+          <input type="text" data-i18n-placeholder="searchPlaceholder" placeholder="搜尋夜市..."
+            class="bg-gray-700 px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <!-- <button id="languageToggle" class="px-3 py-1 bg-gray-700 rounded-lg hover:bg-gray-600">
+          中文
+        </button> -->
+        <a href="../pages/home.html" data-i18n="home">首頁</a>
       </div>
     </div>
   </header>
@@ -129,19 +135,19 @@
       <div class="w-64 space-y-4">
         <!-- Filters -->
         <div class="bg-gray-800 rounded-lg p-4">
-          <h2 class="text-lg font-semibold mb-4">篩選條件</h2>
+          <h2 class="text-lg font-semibold mb-4" data-i18n="filters">篩選條件</h2>
           <div class="space-y-2">
             <label class="filter-item">
               <input type="checkbox" class="custom-checkbox" />
-              <span>營業中</span>
+              <span data-i18n="openNow">營業中</span>
             </label>
             <label class="filter-item">
               <input type="checkbox" class="custom-checkbox" />
-              <span>小吃</span>
+              <span data-i18n="food">小吃</span>
             </label>
             <label class="filter-item">
               <input type="checkbox" class="custom-checkbox" />
-              <span>飾品</span>
+              <span data-i18n="accessories">飾品</span>
             </label>
           </div>
         </div>
@@ -154,6 +160,17 @@
             const [loading, setLoading] = React.useState(false);
             const [error, setError] = React.useState("");
             const [nearbyMarkets, setNearbyMarkets] = React.useState([]);
+            const [currentLang, setCurrentLang] = React.useState(localStorage.getItem('language') || 'zh');
+
+            // 添加語言變更監聽
+            React.useEffect(() => {
+              const handleLanguageChange = () => {
+                setCurrentLang(localStorage.getItem('language') || 'zh');
+              };
+
+              window.addEventListener('languageChanged', handleLanguageChange);
+              return () => window.removeEventListener('languageChanged', handleLanguageChange);
+            }, []);
 
             const handleGetLocation = () => {
               setLoading(true);
@@ -292,7 +309,9 @@
 
             return (
               <div className="location-button">
-                <h2 className="heading">我的位置</h2>
+                <h2 className="heading">
+                  {window.translations[currentLang].myLocation}
+                </h2>
                 <button
                   onClick={handleGetLocation}
                   disabled={loading}
@@ -332,14 +351,20 @@
                       />
                     </svg>
                   )}
-                  <span>{loading ? "搜尋中..." : "尋找附近夜市"}</span>
+                  <span>
+                    {loading
+                      ? window.translations[currentLang].searching
+                      : window.translations[currentLang].findNearbyMarkets}
+                  </span>
                 </button>
 
                 {error && <p className="error">{error}</p>}
 
                 {nearbyMarkets.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <h3 className="text-lg font-semibold">附近的夜市：</h3>
+                    <h3 className="text-lg font-semibold">
+                      {window.translations[currentLang].nearbyMarkets}
+                    </h3>
                     {nearbyMarkets.map((market, index) => (
                       <div key={index} className="bg-gray-700 p-3 rounded-lg">
                         <div className="flex justify-between items-center">
@@ -352,7 +377,7 @@
                           onClick={() => window.open(`https://www.google.com/maps/search/${market.name}/@${market.lat},${market.lng},15z`, '_blank')}
                           className="mt-2 text-sm text-blue-400 hover:text-blue-300"
                         >
-                          在地圖中查看
+                          {window.translations[currentLang].viewOnMap}
                         </button>
                       </div>
                     ))}
@@ -366,6 +391,7 @@
           root.render(<LocationButton />);
         </script>
         <script src="../javascript/script.js"></script>
+        <script src="../javascript/i18n.js"></script>
 </body>
 
 </html>

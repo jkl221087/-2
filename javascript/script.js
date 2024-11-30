@@ -103,7 +103,7 @@ const countyData = {
                 crowdLevel: '擁擠',
                 rating: 4.6,
                 features: ['小吃', '飾品'],
-                description: '鄰近逢甲大學，是學生最愛的美食天堂'
+                description: '鄰近逢甲大學，是學生最愛的��食天堂'
             },
             {
                 name: '淡水英專夜市',
@@ -412,7 +412,7 @@ const countyData = {
                 crowdLevel: '擁擠',
                 rating: 4.6,
                 features: ['小吃', '飾品'],
-                description: '鄰近逢甲大學，是學生最愛的美食天堂'
+                description: '鄰近逢甲大學，是學生最愛的美食����'
             }
         ]
     },
@@ -834,7 +834,7 @@ const countyData = {
                 openTime: '15:00-24:00',
                 crowdLevel: '擁擠',
                 rating: 4.6,
-                features: ['小吃', '飾品'],
+                features: ['小��', '���品'],
                 description: '鄰近逢甲大學，是學生最愛的美食天堂'
             },
             {
@@ -1791,7 +1791,7 @@ const countyData = {
         name: '臺南市',
         markets: [
             {
-                name: '花園夜市',
+                name: '花園������市',
                 openTime: '15:00-24:00',
                 crowdLevel: '擁擠',
                 rating: 4.6,
@@ -2164,7 +2164,7 @@ const countyData = {
                 crowdLevel: '擁擠',
                 rating: 4.6,
                 features: ['小吃', '飾品'],
-                description: '鄰近逢甲大學，是學生最愛的美食天堂'
+                description: '鄰近逢甲大學，是學生最愛美食天堂'
             },
             {
                 name: '大內夜市',
@@ -3176,7 +3176,7 @@ const countyData = {
                 crowdLevel: '擁擠',
                 rating: 4.6,
                 features: ['小吃', '飾品'],
-                description: '鄰近逢甲大學，是學生最愛的美食天堂'
+                description: '鄰近���甲大學��是學生最愛��美食天堂'
             },
             {
                 name: '新城夜市',
@@ -3388,7 +3388,7 @@ const countyData = {
                 openTime: '15:00-24:00',
                 crowdLevel: '擁擠',
                 rating: 4.6,
-                features: ['小吃', '飾品'],
+                features: ['小吃', '���品'],
                 description: '鄰近逢甲大學，是學生最愛的美食天堂'
             },
             {
@@ -3475,8 +3475,8 @@ function showInfoCard(regionId, event) {
     // 篩選夜市
     const filteredMarkets = countyInfo.markets.filter(market => {
         if (filters.isOpen && !isMarketOpen(market.openTime)) return false;
-        if (filters.hasFood && !market.features.includes('小吃')) return false;
-        if (filters.hasAccessories && !market.features.includes('飾品')) return false;
+        if (filters.hasFood && !isFeatureMatch(market.features, 'food')) return false;
+        if (filters.hasAccessories && !isFeatureMatch(market.features, 'accessories')) return false;
         return true;
     });
 
@@ -3517,6 +3517,19 @@ function showInfoCard(regionId, event) {
                 ${market.features.map(feature => 
                     `<span class="text-xs px-2 py-1 bg-gray-600 rounded-full">${feature}</span>`
                 ).join('')}
+            </div>
+            <div class="mt-3">
+                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(market.name )}" 
+                   target="_blank" 
+                   class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>前往導航</span>
+                </a>
             </div>
         `;
         marketList.appendChild(marketElement);
@@ -3895,33 +3908,27 @@ let filters = {
   hasAccessories: false
 };
 
-// 初始化篩選功能
-function initializeFilters() {
-  const checkboxes = document.querySelectorAll('.filter-item input[type="checkbox"]');
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-      const filterType = this.closest('.filter-item').querySelector('span').textContent;
-      switch(filterType) {
-        case '營業中':
-          filters.isOpen = this.checked;
-          break;
-        case '小吃':
-          filters.hasFood = this.checked;
-          break;
-        case '飾品':
-          filters.hasAccessories = this.checked;
-          break;
-      }
-      
-      // 如果資訊卡片正在顯示，則更新顯示的內容
-      if (isCardVisible) {
-        const currentRegion = document.querySelector('.region.active');
-        if (currentRegion) {
-          showInfoCard(currentRegion.id, lastEvent);
-        }
-      }
-    });
-  });
+// 修改篩選夜市的功能，使其支持多語言特徵標籤
+function isFeatureMatch(marketFeatures, filterType) {
+  // 定義特徵對應關係
+  const featureMap = {
+    'food': ['小吃', 'food', 'snacks'],
+    'accessories': ['飾品', 'accessories', 'jewelry']
+  };
+  
+  // 將市場特徵轉換為小寫以進行比對
+  const normalizedMarketFeatures = marketFeatures.map(f => f.toLowerCase());
+  
+  if (filterType === 'food') {
+    return normalizedMarketFeatures.some(feature => 
+      featureMap.food.some(keyword => feature.includes(keyword.toLowerCase()))
+    );
+  } else if (filterType === 'accessories') {
+    return normalizedMarketFeatures.some(feature => 
+      featureMap.accessories.some(keyword => feature.includes(keyword.toLowerCase()))
+    );
+  }
+  return false;
 }
 
 // 檢查夜市是否營業中
@@ -3935,6 +3942,33 @@ function isMarketOpen(openTime) {
   } else {
     return currentHour >= start && currentHour < end;
   }
+}
+
+// 初始化篩選功能
+function initializeFilters() {
+  const checkboxes = document.querySelectorAll('.filter-item input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const filterText = this.closest('.filter-item').querySelector('span').textContent.trim().toLowerCase();
+      
+      // 使用更寬鬆的匹配條件
+      if (filterText.includes('營業') || filterText.includes('open')) {
+        filters.isOpen = this.checked;
+      } else if (filterText.includes('小吃') || filterText.includes('food') || filterText.includes('snacks')) {
+        filters.hasFood = this.checked;
+      } else if (filterText.includes('飾品') || filterText.includes('accessories') || filterText.includes('jewelry')) {
+        filters.hasAccessories = this.checked;
+      }
+      
+      // 如果資訊卡片正在顯示，則更新顯示的內容
+      if (isCardVisible) {
+        const currentRegion = document.querySelector('.region.active');
+        if (currentRegion) {
+          showInfoCard(currentRegion.id, lastEvent);
+        }
+      }
+    });
+  });
 }
 
 // 在文檔加載完成後初始化篩選功能
